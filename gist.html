@@ -3,60 +3,69 @@
 <head>
 	<meta charset = "UTF-8">
 	<title>Assignment 3 Gists</title>
-		<script type = "text/javascript">
-		//use number to loop 
-		//attach results to list
-			function getGist( ) {
-				var response=[];
-				var url = [];
-				var httpRequest;
-				if(window.XMLHttpRequest){
-					httpRequest = new XMLHttpRequest();
-				}else if(window.ActieXObject){
+	<script type = "text/javascript">
+		function getGist( ) {
+			var response=[];
+			var url = [];
+			var id = [];
+			var httpRequest;
+			if(window.XMLHttpRequest){
+				httpRequest = new XMLHttpRequest();
+			}else if(window.ActieXObject){
+				try{
+					httpRequest = new ActieXObject("Msxml2.XMLHTTP");
+				}
+				catch(e){
 					try{
-						httpRequest = new ActieXObject("Msxml2.XMLHTTP");
+						httpRequest = new ActieXObject("Microsoft.XMLHTTP");
 					}
-					catch(e){
-						try{
-							httpRequest = new ActieXObject("Microsoft.XMLHTTP");
-						}
-						catch (e) {}
+					catch (e) {}
+				}
+			}
+			if(!httpRequest){
+				alert('Giving up Cannot create an XMLHTTP instance');
+				return false;
+			}
+			
+			httpRequest.open('GET', "https://api.github.com/gists" );
+			httpRequest.send();
+			if (httpRequest.status == 200){
+				if(httpRequest.readyState === 4){
+					response = JSON.parse(httpRequest.responseText);
+					for(var i in response){
+						 url[i] = response[i].url[i];
+						 id[i] = response[0].id[i];
+						list(url[i],id[i]);
 					}
-				}
-				if(!httpRequest){
-					alert('Giving up Cannot create an XMLHTTP instance');
-					return false;
-				}
-				
-				httpRequest.open('GET', "https://api.github.com/gists/public" );
-				httpRequest.send();
-	
-					if(httpRequest.readyState === 4){
-						response = JSON.parse(httpRequest.responseText);
-						for(var i in response){
-							response[i].url
-							var url = "url": "https://api.github.com/gists/f877960565962b93c686";
-							var language = response.array[0].files.gistfile1.js[0].language;
-							list(url);
-						}
+					
+					var mybody = document.getElementsByTagName("body")[0];
+					mycurrent_row = document.createElement("ul");
+					for(var i = 0; i < 30; i++) {
+						mycurrent_cell = document.createElement("li");
+						currenttext = document.createTextNode("url" + url[i] + "id" + id[i]);
+						mycurrent_cell.appendChild(currenttext);
 					}
+					mybody.appendChild(mycurrent_row);
 				}
-		
- 		function list(url) {
-			var mybody = document.getElementsByTagName("body")[0];
-			for(var j = 0; j < 2; j++) {
-				mycurrent_row = document.createElement("ul");
-				for(var i = 0; i < 2; i++) {
-					mycurrent_cell = document.createElement("li");
-					currenttext = document.createTextNode('url');
-					mycurrent_cell.appendChild(currenttext);
-					mycurrent_row.appendChild(mycurrent_cell);
-				}
-				mybody.appendChild(mycurrent_row);
 			}
 		}
 		
-		</script>
+	
+	function list(url,id) {
+		var mybody = document.getElementsByTagName("body")[0];
+		mycurrent_row = document.createElement("ul");
+		for(var i = 0; i < 30; i++) {
+			mycurrent_cell = document.createElement("li");
+			
+			currenttext = document.createTextNode(url);
+			mycurrent_cell.appendChild(currenttext);
+			mycurrent_row.appendChild(mycurrent_cell);
+
+		}
+		mybody.appendChild(mycurrent_row);
+	}
+	</script>
+		
 </head>
 	<body>
 		<div>
@@ -73,9 +82,10 @@
 				<option>4</option>
 				<option>5</option>
 			</select>
-			<button type = "button" onclick = "getGist()">
-				Submit
-			</button>
 		</form>
+		<input type="text" id = "search"/>
+		<button onclick = "getGist()">Fetch Gists</button>
+				<button onclick = "list()">Test</button>
+
 	</body>
 </html>
